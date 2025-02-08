@@ -4,4 +4,3 @@
 
 # upcoming functionality
 - Plans to read application status via reaction images to automatically send a message into #character-discussion
-- A command to choose between an offered list of items
