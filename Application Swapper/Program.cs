@@ -1,4 +1,5 @@
 ﻿using Discord;
+using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
@@ -20,15 +21,58 @@ namespace Application_Swapper
             client.Log += LogAsync;
             client.MessageReceived += MessageReceivedAsync;
             client.Ready += ReadyAsync;
+            client.MessageReceived += CommandReceivedAsync;
 
             // bot token. DO NOT. SHARE THIS. 1 key has been randomized on upload to make sure there's no issues.
-            string token = "MTMzNzU1NDc5MjkyMIxODU3Nw.Gi2OGJ.uliyhw64bDl5IHTt49BLufqx-A1v9h2opLgE7c";
+            string token = "MTMzNzU1NDc5MyMjIxODU3Nw.GlalGl.mfMEwkfbPWEjkcr-r8y9eBpoDIbmh1GAJ2mfUI";
 
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
 
             // keep program running until closed
             await Task.Delay(-1);
+        }
+
+        private async Task CommandReceivedAsync(SocketMessage arg)
+        {
+            // ignore messages from the bot itself
+            if (arg is not SocketUserMessage message) return;
+            if (message.Author.IsBot) return;
+
+            // make sure message is correct and not from a dm/somewhere the bot cannot access
+            if (message.Channel is SocketTextChannel textChannel)
+            {
+                if (message.Content.StartsWith("!approve"))
+                {
+                    ulong sourceChannelId = 1337607589571072081;  // channel id of mod channe
+                    if (textChannel.Id == sourceChannelId)
+                    {
+                        ulong targetChannelId = 1337619585418924093;  // channel id of application channel
+
+                        // double check channel id
+                        var targetChannel = textChannel.Guild.GetTextChannel(targetChannelId);
+
+                        if (targetChannel != null)
+                        {
+                            string messageContentWithoutCommand = message.Content.Substring("!approve ".Length).Trim();
+
+                            // send message without the command part
+                            await targetChannel.SendMessageAsync($"Full approval issued for: {messageContentWithoutCommand}");
+                        }
+                        else
+                        {
+                            // if the channel id is incorrect
+                            Console.WriteLine("Target channel not found.");
+                        }
+                    }
+                }
+                else
+                {
+                    // error handling
+                    Console.WriteLine("Message error. Please try again.");
+                }
+
+            }
         }
 
         private Task LogAsync(LogMessage log)
@@ -53,13 +97,13 @@ namespace Application_Swapper
             // debug; same message to be sent into mod chat
             Console.WriteLine($"New Application from: {message.Author.Username}\nMessage Contents: {message.Content}");
 
-            // make sure message is correct ad not from a dm/somewhere the bot cannot access
+            // make sure message is correct and not from a dm/somewhere the bot cannot access
             if (message.Channel is SocketTextChannel textChannel)
             {
-                ulong sourceChannelId = 1335950203769065492;  // channel id of application channel
+                ulong sourceChannelId = 1337619585418924093;  // channel id of application channel
                 if (textChannel.Id == sourceChannelId)
                 {
-                    ulong targetChannelId = 1335957074294865930;  // channel id of mod channel
+                    ulong targetChannelId = 1337607589571072081;  // channel id of mod channel
 
                     // double check channel id
                     var targetChannel = textChannel.Guild.GetTextChannel(targetChannelId);
@@ -81,6 +125,7 @@ namespace Application_Swapper
                 // error handling
                 Console.WriteLine("Message error. Please try again.");
             }
+
         }
     }
 }
