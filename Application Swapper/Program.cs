@@ -24,7 +24,7 @@ namespace Application_Swapper
             client.MessageReceived += CommandReceivedAsync;
 
             // bot token. DO NOT. SHARE THIS. 1 key has been randomized on upload to make sure there's no issues.
-            string token = "MTMzNzU1NDc5MyMjIxODU3Nw.GlalGl.mfMEwkfbPWEjkcr-r8y9eBpoDIbmh1GAJ2mfUI";
+            string token = "bot token";
 
             await client.LoginAsync(TokenType.Bot, token);
             await client.StartAsync();
